@@ -1,0 +1,13 @@
+.display-info {
+  margin-top: 12px;
+  display: flex;
+
+  &__label {
+    flex: 1;
+    max-width: 224px;
+  }
+
+  &__value {
+    margin-left: 24px;
+  }
+}
