@@ -264,3 +264,29 @@ export const containerList = [
   },
 ];
 
+export const TEST_CONTAINER_LIST = [
+  {
+    operator_note: "Q-production A1",
+    container_type_id: 2,
+    solution_name: "Production medium",
+    solution_initial_volume_mL: null,
+    inventory_location: "ferm-4th floor",
+    id: 13,
+    // x: 593.9393920898438,
+    // y: 260.6060791015625,
+    type: "empty",
+    solution_description: null,
+  },
+  {
+    operator_note: "0h-A1",
+    container_type_id: 4,
+    solution_name: null,
+    solution_initial_volume_mL: 5,
+    inventory_location: "fridge",
+    // x: 258.3976135253906,
+    // y: 331.9783248901367,
+    type: "empty",
+    id: 26,
+    solution_description: null,
+  },
+];
