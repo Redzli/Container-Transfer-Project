@@ -72,7 +72,7 @@ const App = () => {
 const GraphConfig =  {
   NodeTypes: {
     empty: { // required to show empty nodes
-      typeText: "Container",
+      // typeText: "Container",
       shapeId: "#empty", // relates to the type property of a node
       shape: (
         <symbol viewBox="0 0 100 100" id="empty" key="0">
@@ -137,8 +137,9 @@ useEffect(()=> {
     <div className="container">
       {/* <ContainerContext.Provider value={nodes} > */}
         <GraphView  
-          // nodes={graphData.nodes}
+        initialBBox={true}
           nodes={nodes}
+          layoutEngineType='VerticalTree'
           edges={edges}
           edgeTypes={GraphConfig.EdgeTypes} 
           nodeKey={'id'} 

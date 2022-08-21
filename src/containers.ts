@@ -1,3 +1,4 @@
+import { idText } from "typescript";
 import { randomIntFromInterval } from "./utils";
 
 export const containerList = [
@@ -273,8 +274,6 @@ export const TEST_CONTAINER_LIST = [
     solution_initial_volume_mL: null,
     inventory_location: "ferm-4th floor",
     id: 13,
-    // x: 593.9393920898438,
-    // y: 260.6060791015625,
     type: "empty",
     solution_description: null,
   },
@@ -284,8 +283,6 @@ export const TEST_CONTAINER_LIST = [
     solution_name: null,
     solution_initial_volume_mL: 5,
     inventory_location: "fridge",
-    // x: 258.3976135253906,
-    // y: 331.9783248901367,
     type: "empty",
     id: 26,
     solution_description: null,
@@ -293,18 +290,13 @@ export const TEST_CONTAINER_LIST = [
 ];
 
 export const nodeList = containerList.map((container) => {
-  const x = randomIntFromInterval(200, 1000);
-  const y = randomIntFromInterval(200, 1000);
+  // const x = randomIntFromInterval(200, 2000);
+  // const y = randomIntFromInterval(200, 2000);
   return {
     ...container,
     type: "empty",
-    x,
-    y,
+    title: `Container ${container.id}`,
+    // x,
+    // y,
   };
 });
-
-export const updateContainers = (newNodes: any) => {
-  for (var i = 0; i < nodeList.length; i++) {
-    nodeList[i] = newNodes[i];
-  }
-};

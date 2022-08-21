@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect } from "react";
-import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
+import "antd/dist/antd.css";
 import { Button, message } from "antd";
 import DisplayInfo, { DisplayProps } from "../display-info";
 import { Input, TreeNodeProps, Form } from "antd";
@@ -47,7 +47,7 @@ const ContainerEditModal = (props: IProps) => {
   }, []);
 
   const onFinish = () => {
-    console.log("FORM VALUES", form.getFieldsValue());
+    // call api to update nodes
     editContainer(
       {
         ...form.getFieldsValue(),
@@ -62,20 +62,6 @@ const ContainerEditModal = (props: IProps) => {
         updateNodes(res);
         //@ts-ignore
         fetchData(res);
-        // setNodes([
-        //   {
-        //     operator_note: "0h-A1",
-        //     container_type_id: 4,
-        //     solution_name: null,
-        //     solution_initial_volume_mL: 5,
-        //     inventory_location: "fridge",
-        //     x: 258.3976135253906,
-        //     y: 331.9783248901367,
-        //     type: "empty",
-        //     id: 26,
-        //     solution_description: null,
-        //   },
-        // ]);
         console.log("LIST heyhey", res);
       })
       .catch((error) => console.error(error));
