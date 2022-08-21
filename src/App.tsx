@@ -12,15 +12,15 @@ import {
 import React, { useContext, useState, useMemo, useCallback, useEffect, createContext } from "react";
 import Tree from "react-d3-tree";
 import { version } from "react-d3-tree/package.json";
-import {randomIntFromInterval} from './utils';
+import {randomIntFromInterval,   isDrag} from './utils';
 // import treeData from "./tree-data.json";
 // import graphData from "./tree-data.json";
 import {graphData} from "./graph-data";
 import { getContainerInfo } from "./apis";
 import { Modal, Drawer } from "antd";
 import {containerList, TEST_CONTAINER_LIST, nodeList} from './containers'
-import {transfers} from './transfers'
-import ContainerInfoModal from "./components/container-info-drawer/index";
+import {transfers, transferList} from './transfers'
+import ContainerInfoDrawer from "./components/container/container-info-drawer/index";
 import {
   GetContainerInfoRequest,
   GetContainerInfoResponse,
@@ -28,20 +28,24 @@ import {
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import "./App.css";
 import { RawNodeDatum, TreeLinkDatum } from "react-d3-tree/lib/types/common";
+import { isDefaultClause } from 'typescript';
+import TransferInfoDrawer from './components/transfers/transfer-info-drawer';
 
 interface CustomNodeDatum extends RawNodeDatum {
   id?: number;
 }
 
 export const ContainerContext = createContext();
+export const TransferContext = createContext();
 
 const App = () => {
   const [containerVisible, setContainerVisible] = useState<boolean>(false);
-  const [containerData, setContainerData] = useState<any>();
+  const [transferVisible, setTransferVisible] = useState<boolean>(false);
+  // const [containerData, setContainerData] = useState<any>();
   const [containerId, setContainerId] = useState<number>(-1);
-  const [tranferData, setTransferData] = useState<any>();
+  const [transferId, setTransferId] = useState<number>();
   const [nodes, setNodes] = useState<any>(nodeList);
-  const [edges, setEdges] = useState<any>(transfers);
+  const [edges, setEdges] = useState<any>(transferList);
   // const [testData, setTestData] = useState<any>(treeData);
 
   // useEffect(() => {
@@ -49,24 +53,24 @@ const App = () => {
   //   setTestData(data);
   // }, []);
 
-  const getContainerData = (node ) => {
+  const onSelectNodeOrEdge = (node ) => {
     console.log("WHAT IS NODES", node)
-    if(node){
+    // if node selected
+    if(node.nodes){
       // get the first key-value pair in the map
       const [id] = node.nodes.keys();
       setContainerId(id);
-      // const data = getContainerInfo( id, nodes );
-      // setContainerData(data);
       setContainerVisible(true);
+      return;
+    }
+
+    // if edge selected 
+    if(node.edges) {
+      const [transferData] = node.edges.values();
+      setTransferId(transferData?.id);
+      setTransferVisible(true);
     }
   };
-
-  // const getTransferData = (node: RawNodeDatum) => {
-  //   if (!node.data?.id) return;
-  //   const data = getContainerInfo({ id: node.data?.id });
-  //   setContainerData(data);
-  //   setContainerVisible(true);
-  // };
 
 
 const GraphConfig =  {
@@ -96,42 +100,26 @@ const GraphConfig =  {
       shapeId: "#emptyEdge",
       shape: (
         <symbol viewBox="0 0 50 50" id="emptyEdge" key="0">
-          {/* <circle cx="25" cy="25" r="8" fill="currentColor"> </circle> */}
         </symbol>
       )
     }
   }
 }
 
-useEffect(()=> {
-  const edgeList = transfers.map(transfer => {
-    return {
-      type: "emptyEdge",
-      source: transfer.source_container_id,
-      target: transfer.destination_container_id,
-    }
-  })
-
-  setEdges(edgeList)
-}, [])
-
-// useEffect(() => {
-//   const nodeList = containerList.map(container => {
-//     const x = randomIntFromInterval(200, 1000);
-//     const y = randomIntFromInterval(200, 1000);
+// useEffect(()=> {
+//   const edgeList = transfers.map(transfer => {
 //     return {
-//       ...container,
-//       type: 'empty',
-//       x,
-//       y
+//       type: "emptyEdge",
+//       source: transfer.source_container_id,
+//       target: transfer.destination_container_id,
 //     }
 //   })
 
-//   console.log("NODE LIST?", nodeList)
-//   setNodes(nodeList)
-// },[] )
+//   setEdges(edgeList)
+// }, [])
 
-  console.log("LIST APP", nodeList)
+
+  console.log("LIST APP", transferList)
 
   return (
     <div className="container">
@@ -146,7 +134,7 @@ useEffect(()=> {
           allowMultiselect={false}
           nodeSubtypes={GraphConfig.NodeSubtypes} 
           nodeTypes={GraphConfig.NodeTypes}
-          onSelect={getContainerData}
+          onSelect={onSelectNodeOrEdge}
         />
       {/* </ContainerContext.Provider> */}
       {/* <Tree
@@ -166,10 +154,23 @@ useEffect(()=> {
           onClose={() => setContainerVisible(false)}
           onOk={() => setContainerVisible(false)}
         >
-          <ContainerInfoModal nodes={nodes} containerId={containerId} setNodes={setNodes} data={containerData} />
+          <ContainerInfoDrawer nodes={nodes} containerId={containerId} setNodes={setNodes}  />
         </Drawer>
       </ContainerContext.Provider>
+
+      <TransferContext.Provider value={setEdges} >
+        <Drawer
+          title="Transfer Information"
+          visible={transferVisible}
+          onClose={() => setTransferVisible(false)}
+          onOk={() => setTransferVisible(false)}
+        >
+          <TransferInfoDrawer transfers={transfers} transferId={transferId}   />
+        </Drawer>
+      </TransferContext.Provider>
     </div>
+
+
   );
 };
 

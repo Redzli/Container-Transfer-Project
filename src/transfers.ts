@@ -203,3 +203,12 @@ export const transfers = [
     amount_transferred: 5,
   },
 ];
+
+export const transferList = transfers.map((transfer) => {
+  return {
+    ...transfer,
+    type: "emptyEdge",
+    source: transfer.source_container_id,
+    target: transfer.destination_container_id,
+  };
+});

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
 import { Button, Modal } from "antd";
-import { getContainerInfo } from "../../apis";
-import DisplayInfo, { DisplayProps } from "../display-info";
+import { getContainerInfo } from "../../../apis";
+import DisplayInfo, { DisplayProps } from "../../display-info";
 import { TreeNodeProps } from "antd";
 import styles from "./index.module.scss";
 import ContainerEditModal from "../container-edit-modal";
 import { container } from "webpack";
 
 interface IProps {
-  data: TreeNodeProps;
   containerId: number;
   nodes: any;
   setNodes: () => void;

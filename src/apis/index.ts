@@ -12,9 +12,13 @@ interface INode {
   id: number;
 }
 
+interface ITransfer {
+  id: number;
+  destination_container_id: number;
+  source_container_id: number;
+}
+
 export function getContainerInfo(id: number, originalNodes: INode[]) {
-  // console.log("DATA ", data);
-  // const { id } = data;
   if (!id)
     return {
       msg: "invalid parameter",
@@ -24,19 +28,19 @@ export function getContainerInfo(id: number, originalNodes: INode[]) {
   return originalNodes.filter((container) => container.id == id);
 }
 
-export function editContainer<EditContainerResponse>(
-  data: any,
-  originalNodes: INode[]
-) {
+export function getTransferInfo(id: number, originalTransfers: ITransfer[]) {
+  if (!id)
+    return {
+      msg: "invalid parameter",
+      code: 10000,
+    };
+
+  return originalTransfers.filter((transfer) => transfer.id == id);
+}
+
+export function editContainer(data: any, originalNodes: INode[]) {
   return new Promise((resolve, reject) => {
-    const {
-      id,
-      operator_note,
-      solution_name,
-      solution_initial_volume_mL,
-      inventory_location,
-      solution_description,
-    } = data;
+    const { id } = data;
 
     if (!id)
       reject({
@@ -48,11 +52,7 @@ export function editContainer<EditContainerResponse>(
       if (container.id == id) {
         return {
           ...container,
-          operator_note,
-          solution_description,
-          solution_name,
-          solution_initial_volume_mL,
-          inventory_location,
+          ...data,
         };
       } else {
         return container;
@@ -61,5 +61,43 @@ export function editContainer<EditContainerResponse>(
 
     console.log("LIST API", targetContainers);
     resolve(targetContainers);
+  });
+}
+
+export function editTranfers(data: any, originalTransfers: ITransfer[]) {
+  return new Promise((resolve, reject) => {
+    const {
+      id,
+      destination_container_id: target,
+      source_container_id: source,
+    } = data;
+
+    if (!id)
+      reject({
+        msg: "invalid parameter",
+        code: 10000,
+      });
+
+    console.log("ORIGINAL TRANS", originalTransfers);
+
+    const updatedTranfsers = originalTransfers?.map((transfer) => {
+      if (transfer.id == id) {
+        return {
+          ...transfer,
+          ...data,
+          target: parseInt(target),
+          source: parseInt(source),
+        };
+      } else {
+        return {
+          ...transfer,
+          target: transfer?.destination_container_id,
+          source: transfer?.source_container_id,
+        };
+      }
+    });
+
+    console.log("LIST API", updatedTranfsers);
+    resolve(updatedTranfsers);
   });
 }

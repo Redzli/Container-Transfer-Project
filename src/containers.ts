@@ -290,13 +290,9 @@ export const TEST_CONTAINER_LIST = [
 ];
 
 export const nodeList = containerList.map((container) => {
-  // const x = randomIntFromInterval(200, 2000);
-  // const y = randomIntFromInterval(200, 2000);
   return {
     ...container,
     type: "empty",
-    title: `Container ${container.id}`,
-    // x,
-    // y,
+    title: `C ${container.id}`,
   };
 });
