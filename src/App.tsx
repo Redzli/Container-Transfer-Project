@@ -13,27 +13,17 @@ import React, { useContext, useState, useMemo, useCallback, useEffect, createCon
 import Tree from "react-d3-tree";
 import { version } from "react-d3-tree/package.json";
 import {randomIntFromInterval,   isDrag} from './utils';
-// import treeData from "./tree-data.json";
-// import graphData from "./tree-data.json";
-import {graphData} from "./graph-data";
-import { getContainerInfo } from "./apis";
-import { Modal, Drawer } from "antd";
-import {containerList, TEST_CONTAINER_LIST, nodeList} from './containers'
-import {transfers, transferList} from './transfers'
+import { Modal, Button, Drawer } from "antd";
+import { nodeList} from './containers'
+import { transferList} from './transfers'
 import ContainerInfoDrawer from "./components/container/container-info-drawer/index";
-import {
-  GetContainerInfoRequest,
-  GetContainerInfoResponse,
-} from "../api-definition";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
-import "./App.css";
 import { RawNodeDatum, TreeLinkDatum } from "react-d3-tree/lib/types/common";
-import { isDefaultClause } from 'typescript';
 import TransferInfoDrawer from './components/transfers/transfer-info-drawer';
+import { OperationMode } from "./apis/api-definition";
+import TransferEditModal from './components/transfers/transfer-edit-modal'
+import styles from './index.module.scss';
 
-interface CustomNodeDatum extends RawNodeDatum {
-  id?: number;
-}
 
 export const ContainerContext = createContext();
 export const TransferContext = createContext();
@@ -41,17 +31,11 @@ export const TransferContext = createContext();
 const App = () => {
   const [containerVisible, setContainerVisible] = useState<boolean>(false);
   const [transferVisible, setTransferVisible] = useState<boolean>(false);
-  // const [containerData, setContainerData] = useState<any>();
+  const [transferModalVisible, setTransferModalVisible] = useState<boolean>(false);
   const [containerId, setContainerId] = useState<number>(-1);
   const [transferId, setTransferId] = useState<number>();
   const [nodes, setNodes] = useState<any>(nodeList);
   const [edges, setEdges] = useState<any>(transferList);
-  // const [testData, setTestData] = useState<any>(treeData);
-
-  // useEffect(() => {
-  //   const data = linkContainer();
-  //   setTestData(data);
-  // }, []);
 
   const onSelectNodeOrEdge = (node ) => {
     console.log("WHAT IS NODES", node)
@@ -106,27 +90,17 @@ const GraphConfig =  {
   }
 }
 
-// useEffect(()=> {
-//   const edgeList = transfers.map(transfer => {
-//     return {
-//       type: "emptyEdge",
-//       source: transfer.source_container_id,
-//       target: transfer.destination_container_id,
-//     }
-//   })
-
-//   setEdges(edgeList)
-// }, [])
-
-
   console.log("LIST APP", transferList)
+  console.log("LIST Edge", edges)
 
   return (
-    <div className="container">
-      {/* <ContainerContext.Provider value={nodes} > */}
+    <div className={styles.container}>
+      <Button onClick={()=>setTransferModalVisible(true)} className={styles.transferButton}> Create Transfer</Button>
+
         <GraphView  
-        initialBBox={true}
+          initialBBox={true}
           nodes={nodes}
+          readOnly
           layoutEngineType='VerticalTree'
           edges={edges}
           edgeTypes={GraphConfig.EdgeTypes} 
@@ -136,16 +110,6 @@ const GraphConfig =  {
           nodeTypes={GraphConfig.NodeTypes}
           onSelect={onSelectNodeOrEdge}
         />
-      {/* </ContainerContext.Provider> */}
-      {/* <Tree
-        // onNodeMouseOver={(node, evt) => {
-        // console.log('onNodeMouseOver' );
-        // }}
-        onLinkMouseOver={getTransferData}
-        onNodeClick={getContainerData}
-        // data={treeData}
-        data={testData}
-      /> */}
 
       <ContainerContext.Provider value={setNodes} >
         <Drawer
@@ -165,8 +129,23 @@ const GraphConfig =  {
           onClose={() => setTransferVisible(false)}
           onOk={() => setTransferVisible(false)}
         >
-          <TransferInfoDrawer transfers={transfers} transferId={transferId}   />
+          <TransferInfoDrawer transfers={edges} transferId={transferId}   />
         </Drawer>
+
+        <Modal
+          title="Create a new Transfer"
+          visible={transferModalVisible}
+          onCancel={()=> setTransferModalVisible(false)}
+          onOk={()=> setTransferModalVisible(false)}
+          destroyOnClose
+          footer={null}
+        >
+          <TransferEditModal
+            closeModal={()=> setTransferModalVisible(false)}
+            operationMode={OperationMode.CREATE}
+            transfers={edges}
+            />
+        </Modal>
       </TransferContext.Provider>
     </div>
 

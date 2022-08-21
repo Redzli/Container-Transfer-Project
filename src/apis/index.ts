@@ -5,8 +5,9 @@ import {
   // ContainerRequest,
   // EditContainerRequest,
   EditContainerResponse,
-} from "../../api-definition";
+} from "./api-definition";
 import { resolve } from "path";
+import { randomIntFromInterval } from "../utils";
 
 interface INode {
   id: number;
@@ -14,8 +15,8 @@ interface INode {
 
 interface ITransfer {
   id: number;
-  destination_container_id: number;
-  source_container_id: number;
+  source: number;
+  target: number;
 }
 
 export function getContainerInfo(id: number, originalNodes: INode[]) {
@@ -66,11 +67,7 @@ export function editContainer(data: any, originalNodes: INode[]) {
 
 export function editTranfers(data: any, originalTransfers: ITransfer[]) {
   return new Promise((resolve, reject) => {
-    const {
-      id,
-      destination_container_id: target,
-      source_container_id: source,
-    } = data;
+    const { id, target, source } = data;
 
     if (!id)
       reject({
@@ -91,13 +88,31 @@ export function editTranfers(data: any, originalTransfers: ITransfer[]) {
       } else {
         return {
           ...transfer,
-          target: transfer?.destination_container_id,
-          source: transfer?.source_container_id,
         };
       }
     });
 
     console.log("LIST API", updatedTranfsers);
     resolve(updatedTranfsers);
+  });
+}
+
+export function createTransfer(data: any, originalTransfers: ITransfer[]) {
+  return new Promise((resolve) => {
+    const { target, source } = data;
+
+    const id = randomIntFromInterval(200, 1000);
+
+    const newTransfer = {
+      id,
+      ...data,
+      source: parseInt(source),
+      target: parseInt(target),
+      type: "emptyEdge",
+    };
+
+    const newTransfers = [...originalTransfers, { ...newTransfer }];
+
+    resolve(newTransfers);
   });
 }

@@ -7,9 +7,9 @@ import { TreeNodeProps } from "antd";
 import styles from "./index.module.scss";
 import TransferEditModal from "../transfer-edit-modal";
 import { container } from "webpack";
+import { OperationMode } from "../../../apis/api-definition";
 
 interface IProps {
-  data: TreeNodeProps;
   transferId: number;
   transfers: any;
 }
@@ -41,11 +41,11 @@ const TransferInfoDrawer = (props: IProps) => {
     },
     {
       label: "Destination Container ID",
-      value: transferData?.destination_container_id,
+      value: transferData?.target,
     },
     {
       label: "Source Container ID",
-      value: transferData?.source_container_id,
+      value: transferData?.source,
     },
     {
       label: "Amount Transferred Unit",
@@ -61,7 +61,7 @@ const TransferInfoDrawer = (props: IProps) => {
     setModalVisible(false);
   };
 
-  if (!transferData) return null;
+  // if (!transferData) return null;
 
   return (
     <div className={styles.container}>
@@ -90,6 +90,7 @@ const TransferInfoDrawer = (props: IProps) => {
       >
         <TransferEditModal
           closeModal={closeModal}
+          operationMode={OperationMode.EDIT}
           data={transferData}
           fetchData={fetchData}
           transfers={transfers}

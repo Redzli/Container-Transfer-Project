@@ -78,3 +78,8 @@ export interface GetTransferInfoResponse {
   source_container_id: number;
   amount_transferred: number;
 }
+
+export const enum OperationMode {
+  EDIT = 1,
+  CREATE = 2,
+}
