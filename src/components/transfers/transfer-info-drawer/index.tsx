@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "antd/dist/antd.css";
 import { Button, Modal } from "antd";
-import { getContainerInfo, getTransferInfo } from "../../../apis";
+import { getTransferInfo } from "../../../apis";
 import DisplayInfo, { DisplayProps } from "../../display-info";
-import { TreeNodeProps } from "antd";
 import styles from "./index.module.scss";
 import TransferEditModal from "../transfer-edit-modal";
-import { container } from "webpack";
 import { OperationMode } from "../../../apis/api-definition";
 
 interface IProps {
@@ -60,8 +58,6 @@ const TransferInfoDrawer = (props: IProps) => {
   const closeModal = () => {
     setModalVisible(false);
   };
-
-  // if (!transferData) return null;
 
   return (
     <div className={styles.container}>

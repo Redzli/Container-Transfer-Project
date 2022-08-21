@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from "react";
 import "antd/dist/antd.css";
-import { Button, message, Select } from "antd";
+import { Button, message, Modal, Select } from "antd";
 import { Input, TreeNodeProps, Form } from "antd";
 import styles from "./index.module.scss";
 import { TransferContext } from "../../../App";
@@ -27,6 +27,7 @@ const ContainerEditModal = (props: IProps) => {
 
   // initialise form values
   useEffect(() => {
+    console.log("mode mode", operationMode, data);
     if (operationMode == OperationMode.EDIT && data) {
       form.setFieldsValue({
         ...data,
