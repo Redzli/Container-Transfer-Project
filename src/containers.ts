@@ -1,3 +1,5 @@
+import { randomIntFromInterval } from "./utils";
+
 export const containerList = [
   {
     operator_note: "Q-production A1",
@@ -103,7 +105,6 @@ export const containerList = [
     container_type_id: 4,
     solution_name: null,
     solution_initial_volume_mL: 5,
-
     inventory_location: "fridge",
     id: 147,
     solution_description: null,
@@ -203,7 +204,7 @@ export const containerList = [
     operator_note: "120.0h-A1",
     container_type_id: 4,
     solution_name: null,
-    solution_initial_volume_mL: null,
+    solution_initial_volume_mL: 12,
     inventory_location: "fridge",
     id: 1601,
     solution_description: null,
@@ -290,3 +291,20 @@ export const TEST_CONTAINER_LIST = [
     solution_description: null,
   },
 ];
+
+export const nodeList = containerList.map((container) => {
+  const x = randomIntFromInterval(200, 1000);
+  const y = randomIntFromInterval(200, 1000);
+  return {
+    ...container,
+    type: "empty",
+    x,
+    y,
+  };
+});
+
+export const updateContainers = (newNodes: any) => {
+  for (var i = 0; i < nodeList.length; i++) {
+    nodeList[i] = newNodes[i];
+  }
+};

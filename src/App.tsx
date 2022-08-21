@@ -9,18 +9,18 @@ import {
   BwdlTransformer, // optional, Example JSON transformer
   GraphUtils // optional, useful utility functions
 } from 'react-digraph';
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useContext, useState, useMemo, useCallback, useEffect, createContext } from "react";
 import Tree from "react-d3-tree";
 import { version } from "react-d3-tree/package.json";
 import {randomIntFromInterval} from './utils';
 // import treeData from "./tree-data.json";
 // import graphData from "./tree-data.json";
 import {graphData} from "./graph-data";
-import { getContainerInfo } from "./apis/apis";
-import { Modal } from "antd";
-import {containerList, TEST_CONTAINER_LIST} from './containers'
+import { getContainerInfo } from "./apis";
+import { Modal, Drawer } from "antd";
+import {containerList, TEST_CONTAINER_LIST, nodeList} from './containers'
 import {transfers} from './transfers'
-import ContainerInfoModal from "./components/container-info-modal/index";
+import ContainerInfoModal from "./components/container-info-drawer/index";
 import {
   GetContainerInfoRequest,
   GetContainerInfoResponse,
@@ -33,11 +33,14 @@ interface CustomNodeDatum extends RawNodeDatum {
   id?: number;
 }
 
+export const ContainerContext = createContext();
+
 const App = () => {
   const [containerVisible, setContainerVisible] = useState<boolean>(false);
   const [containerData, setContainerData] = useState<any>();
+  const [containerId, setContainerId] = useState<number>(-1);
   const [tranferData, setTransferData] = useState<any>();
-  const [nodes, setNodes] = useState<any>(TEST_CONTAINER_LIST);
+  const [nodes, setNodes] = useState<any>(nodeList);
   const [edges, setEdges] = useState<any>(transfers);
   // const [testData, setTestData] = useState<any>(treeData);
 
@@ -47,11 +50,15 @@ const App = () => {
   // }, []);
 
   const getContainerData = (node ) => {
-    // get the first key-value pair in the map
-    const [id] = node.nodes.keys();
-    const data = getContainerInfo({ id });
-    setContainerData(data);
-    setContainerVisible(true);
+    console.log("WHAT IS NODES", node)
+    if(node){
+      // get the first key-value pair in the map
+      const [id] = node.nodes.keys();
+      setContainerId(id);
+      // const data = getContainerInfo( id, nodes );
+      // setContainerData(data);
+      setContainerVisible(true);
+    }
   };
 
   // const getTransferData = (node: RawNodeDatum) => {
@@ -65,7 +72,7 @@ const App = () => {
 const GraphConfig =  {
   NodeTypes: {
     empty: { // required to show empty nodes
-      typeText: "None",
+      typeText: "Container",
       shapeId: "#empty", // relates to the type property of a node
       shape: (
         <symbol viewBox="0 0 100 100" id="empty" key="0">
@@ -98,8 +105,6 @@ const GraphConfig =  {
 
 useEffect(()=> {
   const edgeList = transfers.map(transfer => {
-    // const x = randomIntFromInterval(200, 1000);
-    // const y = randomIntFromInterval(200, 1000);
     return {
       type: "emptyEdge",
       source: transfer.source_container_id,
@@ -107,42 +112,42 @@ useEffect(()=> {
     }
   })
 
-
   setEdges(edgeList)
 }, [])
 
-useEffect(() => {
-  const nodeList = containerList.map(container => {
-    const x = randomIntFromInterval(200, 1000);
-    const y = randomIntFromInterval(200, 1000);
-    return {
-      ...container,
-      type: 'empty',
-      x,
-      y
-    }
-  })
+// useEffect(() => {
+//   const nodeList = containerList.map(container => {
+//     const x = randomIntFromInterval(200, 1000);
+//     const y = randomIntFromInterval(200, 1000);
+//     return {
+//       ...container,
+//       type: 'empty',
+//       x,
+//       y
+//     }
+//   })
 
-  console.log("NODE LIST?", nodeList)
+//   console.log("NODE LIST?", nodeList)
+//   setNodes(nodeList)
+// },[] )
 
-  setNodes(nodeList)
-
-},[] )
-
+  console.log("LIST APP", nodeList)
 
   return (
     <div className="container">
-      <GraphView  
-        // nodes={graphData.nodes}
-        nodes={nodes}
-        edges={edges}
-        edgeTypes={GraphConfig.EdgeTypes} 
-        nodeKey={'id'} 
-        allowMultiselect={false}
-        nodeSubtypes={GraphConfig.NodeSubtypes} 
-        nodeTypes={GraphConfig.NodeTypes}
-        onSelect={getContainerData}
-      />
+      {/* <ContainerContext.Provider value={nodes} > */}
+        <GraphView  
+          // nodes={graphData.nodes}
+          nodes={nodes}
+          edges={edges}
+          edgeTypes={GraphConfig.EdgeTypes} 
+          nodeKey={'id'} 
+          allowMultiselect={false}
+          nodeSubtypes={GraphConfig.NodeSubtypes} 
+          nodeTypes={GraphConfig.NodeTypes}
+          onSelect={getContainerData}
+        />
+      {/* </ContainerContext.Provider> */}
       {/* <Tree
         // onNodeMouseOver={(node, evt) => {
         // console.log('onNodeMouseOver' );
@@ -153,14 +158,16 @@ useEffect(() => {
         data={testData}
       /> */}
 
-      <Modal
-        title="Container Information"
-        visible={containerVisible}
-        onCancel={() => setContainerVisible(false)}
-        onOk={() => setContainerVisible(false)}
-      >
-        <ContainerInfoModal data={containerData} />
-      </Modal>
+      <ContainerContext.Provider value={setNodes} >
+        <Drawer
+          title="Container Information"
+          visible={containerVisible}
+          onClose={() => setContainerVisible(false)}
+          onOk={() => setContainerVisible(false)}
+        >
+          <ContainerInfoModal nodes={nodes} containerId={containerId} setNodes={setNodes} data={containerData} />
+        </Drawer>
+      </ContainerContext.Provider>
     </div>
   );
 };
