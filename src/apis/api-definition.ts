@@ -12,12 +12,6 @@ export interface EditContainerResponse {
   extra: Object;
 }
 
-/**
- * @description endpoints for editing or creating a transfer
- * @param EditTransferRequest
- * @returns EditTransferResponse
- */
-
 export interface EditTransferRequest {
   type: number; // 1 for editing, 2 for creating
   id: number;
@@ -31,12 +25,6 @@ export interface EditTransferResponse {
   status_code: string;
   extra: Object;
 }
-
-/**
- * @description endpoints for getting information of a container
- * @param GetContainerInfoRequest
- * @returns GetContainerInfoResponse
- */
 
 export interface GetContainerInfoRequest {
   id: number;
@@ -60,11 +48,6 @@ export interface EditContainerRequest {
   solution_description?: string;
 }
 
-/**
- * @description endpoints for getting information of a transfer
- * @param GetTransferInfoRequest
- * @returns GetTransferInfoResponse
- */
 export interface GetTransferInfoRequest {
   id: number;
   type: number; // 1 for editing, 2 for creating

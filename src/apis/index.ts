@@ -1,12 +1,3 @@
-import { containerList, nodeList, TEST_CONTAINER_LIST } from "../containers";
-import { transfers } from "../transfers";
-import {
-  GetContainerInfoRequest,
-  // ContainerRequest,
-  // EditContainerRequest,
-  EditContainerResponse,
-} from "./api-definition";
-import { resolve } from "path";
 import { randomIntFromInterval } from "../utils";
 
 interface INode {
@@ -19,6 +10,11 @@ interface ITransfer {
   target: number;
 }
 
+/**
+ * @description endpoints for getting information of a container
+ * @param GetContainerInfoRequest
+ * @returns GetContainerInfoResponse
+ */
 export function getContainerInfo(id: number, originalNodes: INode[]) {
   if (!id)
     return {
@@ -29,6 +25,11 @@ export function getContainerInfo(id: number, originalNodes: INode[]) {
   return originalNodes.filter((container) => container.id == id);
 }
 
+/**
+ * @description endpoints for getting information of a transfer
+ * @param GetTransferInfoRequest
+ * @returns GetTransferInfoResponse
+ */
 export function getTransferInfo(id: number, originalTransfers: ITransfer[]) {
   if (!id)
     return {
@@ -39,6 +40,11 @@ export function getTransferInfo(id: number, originalTransfers: ITransfer[]) {
   return originalTransfers.filter((transfer) => transfer.id == id);
 }
 
+/**
+ * @description endpoints for editing information of a transfer
+ * @param EditTransferInfoRequest
+ * @returns EditTransferInfoResponse
+ */
 export function editContainer(data: any, originalNodes: INode[]) {
   return new Promise((resolve, reject) => {
     const { id } = data;
@@ -60,7 +66,6 @@ export function editContainer(data: any, originalNodes: INode[]) {
       }
     });
 
-    console.log("LIST API", targetContainers);
     resolve(targetContainers);
   });
 }
@@ -74,8 +79,6 @@ export function editTranfers(data: any, originalTransfers: ITransfer[]) {
         msg: "invalid parameter",
         code: 10000,
       });
-
-    console.log("ORIGINAL TRANS", originalTransfers);
 
     const updatedTranfsers = originalTransfers?.map((transfer) => {
       if (transfer.id == id) {
@@ -92,11 +95,15 @@ export function editTranfers(data: any, originalTransfers: ITransfer[]) {
       }
     });
 
-    console.log("LIST API", updatedTranfsers);
     resolve(updatedTranfsers);
   });
 }
 
+/**
+ * @description endpoints for editing or creating a transfer
+ * @param EditTransferRequest
+ * @returns EditTransferResponse
+ */
 export function createTransfer(data: any, originalTransfers: ITransfer[]) {
   return new Promise((resolve) => {
     const { target, source } = data;
