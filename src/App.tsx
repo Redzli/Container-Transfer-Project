@@ -1,6 +1,6 @@
 // @ts-nocheck
 // file contents: renders the whole graph
-import React, { useState, createContext, useRef, useEffect } from "react";
+import React, { useState, createContext, useEffect, useMemo } from "react";
 import {
   GraphView, // required
 } from "react-digraph";
@@ -13,6 +13,7 @@ import TransferEditModal from "./components/transfers/transfer-edit-modal";
 import { OperationMode } from "./apis/api-definition";
 import { GraphConfig } from "./utils";
 import styles from "./index.module.scss";
+import TransferTooltip from "./components/transfers/transfer-tooltip";
 
 export const ContainerContext = createContext(null);
 export const TransferContext = createContext(null);
@@ -34,14 +35,12 @@ const App = () => {
   const [containerId, setContainerId] = useState<number>(-1);
   const [transferId, setTransferId] = useState<number>(-1);
 
-  useEffect(() => {
-    console.log("EDGES", ref.current.getEdgeComponent);
-  }, []);
+  const [edgeConfig, setEdgeConfig] = useState({ left: -999, top: -999 });
+  const [tooltipVisible, setTooltipVisible] = useState(false);
+  const [tooltipData, setTooltipData] = useState<any>({});
 
   // on selecting a node or an edge
   const onSelectNodeOrEdge = (node: any) => {
-    console.log("WHAT IS NODES", node);
-    console.log("WHAT IS ref", ref.current);
     // if node selected
     if (node.nodes) {
       // get the first key-value pair in the map
@@ -59,14 +58,37 @@ const App = () => {
     }
   };
 
-  const afterRenderEdge = (a, b, c, d) => {
-    console.log("HEYHEY", a, b, c, d);
+  // when hovering on edges
+  const afterRenderEdge = (_, __, data, instance) => {
+    instance.addEventListener("mouseover", () => {
+      const rect = instance.getBoundingClientRect();
+      setEdgeConfig({ left: rect.left, top: rect.top });
+      setTooltipVisible(true);
+      setTooltipData(data);
+    });
+
+    instance.addEventListener("mouseleave", () => {
+      setTooltipVisible(false);
+    });
   };
 
-  const ref = useRef(null);
+  const tooltipStyle = useMemo(() => {
+    return {
+      zIndex: 12,
+      position: "fixed",
+      height: 200,
+      width: 350,
+      ...edgeConfig,
+    };
+  }, [edgeConfig]);
 
   return (
     <div className={styles.container}>
+      {tooltipVisible && (
+        <div id="tooltipEdges" style={tooltipStyle}>
+          <TransferTooltip transferData={tooltipData} />
+        </div>
+      )}
       <Button
         onClick={() => setTransferModalVisible(true)}
         className={styles.transferButton}
@@ -77,7 +99,6 @@ const App = () => {
 
       {/* Graph */}
       <GraphView
-        ref={ref}
         nodes={nodes}
         afterRenderEdge={afterRenderEdge}
         readOnly
