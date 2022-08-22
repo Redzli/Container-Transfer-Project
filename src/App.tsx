@@ -1,11 +1,11 @@
 // @ts-nocheck
-import React, { useState, createContext } from "react";
+// file contents: renders the whole graph
+import React, { useState, createContext, useRef, useEffect } from "react";
 import {
   GraphView, // required
 } from "react-digraph";
 import { Modal, Button, Drawer } from "antd";
-import { nodeList } from "./containers";
-import { transferList } from "./transfers";
+import { transferList, nodeList } from "./coding-challenge";
 import ContainerInfoDrawer from "./components/container/container-info-drawer/index";
 import "antd/dist/antd.css";
 import TransferInfoDrawer from "./components/transfers/transfer-info-drawer";
@@ -14,8 +14,8 @@ import { OperationMode } from "./apis/api-definition";
 import { GraphConfig } from "./utils";
 import styles from "./index.module.scss";
 
-export const ContainerContext = createContext();
-export const TransferContext = createContext();
+export const ContainerContext = createContext(null);
+export const TransferContext = createContext(null);
 
 const App = () => {
   // initial data to render nodes and edges
@@ -34,9 +34,14 @@ const App = () => {
   const [containerId, setContainerId] = useState<number>(-1);
   const [transferId, setTransferId] = useState<number>(-1);
 
+  useEffect(() => {
+    console.log("EDGES", ref.current.getEdgeComponent);
+  }, []);
+
   // on selecting a node or an edge
-  const onSelectNodeOrEdge = (node) => {
+  const onSelectNodeOrEdge = (node: any) => {
     console.log("WHAT IS NODES", node);
+    console.log("WHAT IS ref", ref.current);
     // if node selected
     if (node.nodes) {
       // get the first key-value pair in the map
@@ -54,6 +59,12 @@ const App = () => {
     }
   };
 
+  const afterRenderEdge = (a, b, c, d) => {
+    console.log("HEYHEY", a, b, c, d);
+  };
+
+  const ref = useRef(null);
+
   return (
     <div className={styles.container}>
       <Button
@@ -64,9 +75,11 @@ const App = () => {
         Create Transfer
       </Button>
 
+      {/* Graph */}
       <GraphView
-        initialBBox={true}
+        ref={ref}
         nodes={nodes}
+        afterRenderEdge={afterRenderEdge}
         readOnly
         layoutEngineType="VerticalTree"
         edges={edges}
@@ -83,13 +96,9 @@ const App = () => {
           title="Container Information"
           visible={containerVisible}
           onClose={() => setContainerVisible(false)}
-          onOk={() => setContainerVisible(false)}
+          destroyOnClose
         >
-          <ContainerInfoDrawer
-            nodes={nodes}
-            containerId={containerId}
-            setNodes={setNodes}
-          />
+          <ContainerInfoDrawer nodes={nodes} containerId={containerId} />
         </Drawer>
       </ContainerContext.Provider>
 
@@ -98,7 +107,6 @@ const App = () => {
           title="Transfer Information"
           visible={transferVisible}
           onClose={() => setTransferVisible(false)}
-          onOk={() => setTransferVisible(false)}
         >
           <TransferInfoDrawer transfers={edges} transferId={transferId} />
         </Drawer>

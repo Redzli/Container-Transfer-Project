@@ -1,11 +1,10 @@
+// file contents: provdies a modal to edit containers
 import React, { useContext, useEffect } from "react";
 import "antd/dist/antd.css";
 import { Button, message } from "antd";
 import { Input, TreeNodeProps, Form } from "antd";
 import styles from "./index.module.scss";
-import { useForm } from "antd/es/form/Form";
 import { ContainerContext } from "../../../App";
-import { containerList, TEST_CONTAINER_LIST } from "../../../containers";
 import { editContainer } from "../../../apis";
 
 interface IProps {
@@ -19,7 +18,6 @@ const ContainerEditModal = (props: IProps) => {
   const { nodes, data, closeModal, fetchData } = props;
   // use context api to avoid props drilling
   const updateNodes = useContext(ContainerContext);
-  console.log("FORM DATA", data);
   const { id } = data;
 
   const [form] = Form.useForm();
@@ -47,7 +45,6 @@ const ContainerEditModal = (props: IProps) => {
         updateNodes(res);
         //@ts-ignore
         fetchData(res);
-        console.log("LIST heyhey", res);
       })
       .catch((error) => console.error(error));
   };

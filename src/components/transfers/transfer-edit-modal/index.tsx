@@ -1,3 +1,4 @@
+// file contents: provdies a modal to edit transfers
 import React, { useContext, useEffect } from "react";
 import "antd/dist/antd.css";
 import { Button, message, Modal, Select } from "antd";
@@ -16,18 +17,15 @@ interface IProps {
 }
 const { Option } = Select;
 
-const ContainerEditModal = (props: IProps) => {
+const TransferEditModal = (props: IProps) => {
   const { transfers, operationMode, data, closeModal, fetchData } = props;
   // use context api to avoid props drilling
   const updateTransfers = useContext(TransferContext);
-  console.log("UPDATE", updateTransfers);
-  console.log("FORM DATA", data);
   const { id } = data || {};
   const [form] = Form.useForm();
 
   // initialise form values
   useEffect(() => {
-    console.log("mode mode", operationMode, data);
     if (operationMode == OperationMode.EDIT && data) {
       form.setFieldsValue({
         ...data,
@@ -35,7 +33,20 @@ const ContainerEditModal = (props: IProps) => {
     }
   }, []);
 
+  const onFinishSuccess = (res: any) => {
+    message.success("Success!");
+    closeModal();
+    // update transfers on the UI
+    //@ts-ignore
+    updateTransfers(res);
+    // refresh data in the drawer
+    //@ts-ignore
+    if (fetchData) fetchData(res);
+  };
+
+  // on submitting the form
   const onFinish = () => {
+    // if editing mode
     if (operationMode === OperationMode.EDIT) {
       // call api to update nodes
       editTranfers(
@@ -46,17 +57,11 @@ const ContainerEditModal = (props: IProps) => {
         transfers
       )
         .then((res) => {
-          message.success("Success!");
-          closeModal();
-          // update transfers on the UI
-          //@ts-ignore
-          updateTransfers(res);
-          // refresh data in the drawer
-          //@ts-ignore
-          fetchData && fetchData(res);
+          onFinishSuccess(res);
         })
         .catch((error) => console.error(error));
     } else {
+      // if creating mode
       createTransfer(
         {
           ...form.getFieldsValue(),
@@ -64,15 +69,7 @@ const ContainerEditModal = (props: IProps) => {
         transfers
       )
         .then((res) => {
-          console.log("NEW TRAN", res);
-          message.success("Success!");
-          closeModal();
-          // update transfers on the UI
-          //@ts-ignore
-          updateTransfers(res);
-          // refresh data in the drawer
-          //@ts-ignore
-          fetchData && fetchData(res);
+          onFinishSuccess(res);
         })
         .catch((error) => console.error(error));
     }
@@ -98,8 +95,9 @@ const ContainerEditModal = (props: IProps) => {
           label="Amount Transferred Unit"
           name="amount_transferred_unit"
         >
-          <Select defaultValue="ml" style={{ width: 120 }}>
+          <Select style={{ width: 120 }}>
             <Option value="ml">ml</Option>
+            <Option value="colonies">colonies</Option>
             <Option value="L">L</Option>
           </Select>
         </Form.Item>
@@ -120,4 +118,4 @@ const ContainerEditModal = (props: IProps) => {
   );
 };
 
-export default ContainerEditModal;
+export default TransferEditModal;

@@ -1,35 +1,22 @@
 import React, { useEffect, useState } from "react";
-import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
+import "antd/dist/antd.css";
 import { Button, Modal } from "antd";
 import { getContainerInfo } from "../../../apis";
 import DisplayInfo, { DisplayProps } from "../../display-info";
-import { TreeNodeProps } from "antd";
 import styles from "./index.module.scss";
 import ContainerEditModal from "../container-edit-modal";
-import { container } from "webpack";
 
 interface IProps {
   containerId: number;
   nodes: any;
-  setNodes: () => void;
 }
 
 const ContainerInfoModal = (props: IProps) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [containerData, setContainerData] = useState<any>();
-  const { setNodes, containerId, nodes } = props;
-  // const {
-  //   operator_note,
-  //   solution_name,
-  //   solution_initial_volume_mL,
-  //   inventory_location,
-  //   solution_description,
-  //   id,
-  //   container_type_id,
-  // } = data[0];
+  const { containerId, nodes } = props;
 
   // get container information
-
   const fetchData = (newNodes = nodes) => {
     if (containerId) {
       //@ts-ignore
@@ -106,7 +93,6 @@ const ContainerInfoModal = (props: IProps) => {
         footer={null}
       >
         <ContainerEditModal
-          // setNodes={setNodes}
           closeModal={closeModal}
           data={containerData}
           fetchData={fetchData}
