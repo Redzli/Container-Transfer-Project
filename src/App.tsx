@@ -60,7 +60,7 @@ const App = () => {
 
   // when hovering on edges
   const afterRenderEdge = (_, __, data, instance) => {
-    instance.addEventListener("mouseover", () => {
+    instance.addEventListener("mouseenter", () => {
       const rect = instance.getBoundingClientRect();
       setEdgeConfig({ left: rect.left, top: rect.top });
       setTooltipVisible(true);
