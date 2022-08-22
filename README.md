@@ -11,7 +11,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ### Notes
 
-1. This project focuses on the front-end implementation. It uses the `coding-challenge.ts` file as its sole backend database. That means `CRUD` operations on nodes and edges do not perform as normal DB operations, i.e. data does not preserve after refreshing the browser. Once refreshing the browser, the nodes and edges will reverse to the original data from `coding-challenge.ts`. 
+1. This project focuses on the front-end implementation. It uses the `coding-challenge.ts` file as its sole backend database. That means `CRUD` operations on nodes and edges do not perform as normal DB operations, i.e. data does not preserve after refreshing the browser. Once refreshing the browser, the nodes and edges will reverse to the original data from `coding-challenge.ts`. Also, when creating a new transfer, the ID is randomly generated.
 
 2. You can use two-finger mouse gesture to zoom in and out of the graph. You can also click and hold anywhere on the graph to move to different positions. 
 

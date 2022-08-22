@@ -89,6 +89,7 @@ const App = () => {
           <TransferTooltip transferData={tooltipData} />
         </div>
       )}
+
       <Button
         onClick={() => setTransferModalVisible(true)}
         className={styles.transferButton}
